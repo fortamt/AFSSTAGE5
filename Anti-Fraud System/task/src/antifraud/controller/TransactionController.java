@@ -2,18 +2,23 @@ package antifraud.controller;
 
 import antifraud.model.Ip;
 import antifraud.model.StolenCard;
+import antifraud.model.request.TransactionFeedback;
 import antifraud.model.request.TransactionRequest;
 import antifraud.model.response.TransactionResultResponse;
+import antifraud.model.validator.CreditCardConstraint;
 import antifraud.service.TransactionService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
-
+@Validated
 @RestController
 @RequestMapping("/api/antifraud")
 @AllArgsConstructor
@@ -24,6 +29,25 @@ public class TransactionController {
     @ResponseStatus(HttpStatus.OK)
     TransactionResultResponse transactionPost(@Valid @RequestBody TransactionRequest request) {
         return transactionService.process(request);
+    }
+
+    @PutMapping("/transaction")
+    @ResponseStatus(HttpStatus.OK)
+    TransactionRequest transactionPut(@Valid @RequestBody TransactionFeedback feedback) {
+        return transactionService.feedbackProcess(feedback);
+    }
+
+    @GetMapping("/history")
+    @ResponseStatus(HttpStatus.OK)
+    List<TransactionRequest> transactionHistory() {
+        return transactionService.history();
+    }
+
+    @GetMapping("/history/{number}")
+    @ResponseStatus(HttpStatus.OK)
+    List<TransactionRequest> transactionHistoryByCardNumber(@PathVariable
+                                                            @CreditCardConstraint String number) {
+        return transactionService.historyByCardNumber(number);
     }
 
     @PostMapping("/stolencard")
@@ -67,5 +91,11 @@ public class TransactionController {
     @ResponseStatus(HttpStatus.OK)
     List<Ip> listSuspiciousAddresses() {
         return transactionService.listSuspiciousAddresses();
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    ResponseEntity<String> handleConstraintViolationException(ConstraintViolationException e) {
+        return new ResponseEntity<>("not valid due to validation error: " + e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

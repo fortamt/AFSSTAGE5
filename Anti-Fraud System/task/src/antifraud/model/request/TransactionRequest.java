@@ -1,8 +1,9 @@
 package antifraud.model.request;
 
+import antifraud.model.RegionCodes;
 import antifraud.model.validator.CreditCardConstraint;
-import antifraud.model.validator.RegionCodesConstraint;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import antifraud.model.validator.ValueOfEnum;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -15,8 +16,8 @@ import java.time.LocalDateTime;
 public class TransactionRequest {
     @Id
     @GeneratedValue
-    @JsonIgnore
-    Long id;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    Long transactionId;
     @NotNull
     @Positive
     Long amount;
@@ -27,7 +28,11 @@ public class TransactionRequest {
     @CreditCardConstraint
     String number;
     @NotEmpty
-    @RegionCodesConstraint
+    @ValueOfEnum(enumClass = RegionCodes.class)
     String region;
     LocalDateTime date;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    String result;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    String feedback ="";
 }

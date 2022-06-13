@@ -1,20 +1,5 @@
 type: edu
 files:
-- name: src/antifraud/AntiFraudApplication.java
-  visible: true
-  text: |-
-    package antifraud;
-
-    import org.springframework.boot.SpringApplication;
-    import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-    @SpringBootApplication
-    public class AntiFraudApplication {
-        public static void main(String[] args) {
-            SpringApplication.run(AntiFraudApplication.class, args);
-        }
-    }
-  learner_created: false
 - name: build.gradle
   visible: true
   text: |-
@@ -60,32 +45,6 @@ files:
     spring.jpa.show-sql=true
     logging.level.org.hibernate.SQL=DEBUG
     logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE
-  learner_created: false
-- name: src/antifraud/model/response/TransactionResultResponse.java
-  visible: true
-  text: |
-    package antifraud.model.response;
-
-    import antifraud.model.Result;
-    import lombok.Getter;
-    import lombok.Setter;
-
-    @Getter
-    @Setter
-    public class TransactionResultResponse {
-        private Result result;
-    //    private String info = "";
-        public TransactionResultResponse() {
-
-        }
-    //    public void appendInfo(String str) {
-    //        info += str;
-    //    }
-    //    public String getInfo() {
-    //        return info.length() == 0 ? "none" : info.trim();
-    //    }
-
-    }
   learner_created: false
 - name: src/antifraud/controller/TransactionController.java
   visible: true
@@ -157,110 +116,6 @@ files:
     //    @ResponseStatus(HttpStatus.OK)
     //    List<Ip> listSuspiciousAddresses() {
     //        return transactionService.listSuspiciousAddresses();
-    //    }
-    }
-  learner_created: false
-- name: src/antifraud/service/TransactionService.java
-  visible: true
-  text: |-
-    package antifraud.service;
-
-    import antifraud.model.Result;
-    import antifraud.model.request.TransactionRequest;
-    import antifraud.model.response.TransactionResultResponse;
-    import lombok.AllArgsConstructor;
-    import org.springframework.stereotype.Service;
-
-    import java.util.regex.Pattern;
-
-    @Service
-    @AllArgsConstructor
-    public class TransactionService {
-
-        private final String IPV4_REGEX = "(([0-1]?\\d{1,2}\\.)|(2[0-4]\\d\\.)|(25[0-5]\\.)){3}(([0-1]?\\d{1,2})|(2[0-4]\\d)|(25[0-5]))";
-        private final Pattern IPV4_PATTERN = Pattern.compile(IPV4_REGEX);
-
-    //    IpRepository ipRepository;
-    //    StolenCardRepository stolenCardRepository;
-
-        public TransactionResultResponse process(TransactionRequest request) {
-            TransactionResultResponse response = new TransactionResultResponse();
-            if (request.getAmount() <= 200) {
-                response.setResult(Result.ALLOWED);
-            } else if (request.getAmount() <= 1500) {
-                response.setResult(Result.MANUAL_PROCESSING);
-            } else {
-                response.setResult(Result.PROHIBITED);
-    //            response.appendInfo(" amount");
-            }
-    //        if (ipRepository.existsByIpAddressIgnoreCase(request.getIp())) {
-    //            response.setResult(Result.PROHIBITED);
-    //            response.appendInfo(" ip");
-    //        }
-    //        if (stolenCardRepository.existsByNumber(request.getNumber())) {
-    //            response.setResult(Result.PROHIBITED);
-    //            response.appendInfo(" number");
-    //        }
-            return response;
-        }
-
-
-    //    @Transactional
-    //    public StolenCard addStolenCard(StolenCard stolenCard) {
-    //        if (stolenCardRepository.existsByNumber(stolenCard.getNumber())) {
-    //            throw new ResponseStatusException(HttpStatus.CONFLICT);
-    //        } else {
-    //            stolenCardRepository.save(stolenCard);
-    //            return stolenCard;
-    //        }
-    //    }
-    //
-    //    @Transactional
-    //    public Map<String, String> deleteStolenCard(String number) {
-    //        if (number.length() != 16) {
-    //            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-    //        }
-    //        if (!stolenCardRepository.existsByNumber(number)) {
-    //            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-    //        } else {
-    //            StolenCard stolenCard = stolenCardRepository.findByNumber(number);
-    //            stolenCardRepository.delete(stolenCard);
-    //            return Map.of("status", "Card " + stolenCard.getNumber() + " successfully removed!");
-    //        }
-    //    }
-    //
-    //    @Transactional
-    //    public List<StolenCard> listStolenCards() {
-    //        return stolenCardRepository.findAll(
-    //                Sort.sort(StolenCard.class).by(StolenCard::getId).ascending()
-    //        );
-    //    }
-    //
-    //    public Optional<Ip> addSuspiciousIp(Ip ip) {
-    //        if (ipRepository.existsByIpAddressIgnoreCase(ip.getIpAddress())) {
-    //            return Optional.empty();
-    //        }
-    //        return Optional.of(ipRepository.save(ip));
-    //    }
-    //
-    //
-    //    @Transactional
-    //    public boolean deleteSuspiciousIp(String ip) {
-    //        if (!isValidIPV4(ip)) {
-    //            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-    //        }
-    //        return ipRepository.deleteByIpAddressIgnoreCase(ip) == 1;
-    //    }
-    //
-    //    private boolean isValidIPV4(final String s) {
-    //        return IPV4_PATTERN.matcher(s).matches();
-    //    }
-    //
-    //    public List<Ip> listSuspiciousAddresses() {
-    //        return ipRepository.findAll()
-    //                .stream()
-    //                .sorted(Comparator.comparing(Ip::getId))
-    //                .collect(Collectors.toList());
     //    }
     }
   learner_created: false
@@ -2617,6 +2472,407 @@ files:
         };
     }
   learner_created: false
+- name: src/antifraud/model/request/RoleRequest.java
+  visible: true
+  text: |
+    package antifraud.model.request;
+
+    import antifraud.model.Role;
+    import lombok.Getter;
+    import lombok.Setter;
+
+    @Getter
+    @Setter
+    public class RoleRequest {
+        private String username;
+        private Role role;
+    }
+  learner_created: true
+- name: src/antifraud/model/StolenCard.java
+  visible: true
+  text: |
+    package antifraud.model;
+
+    import antifraud.model.validator.CreditCardConstraint;
+    import com.fasterxml.jackson.annotation.JsonProperty;
+    import lombok.Getter;
+    import lombok.Setter;
+
+    import javax.persistence.Entity;
+    import javax.persistence.GeneratedValue;
+    import javax.persistence.Id;
+    import javax.persistence.Table;
+
+    @Getter
+    @Setter
+    @Entity
+    @Table(name = "t_stolencard")
+    public class StolenCard {
+        @Id
+        @GeneratedValue
+        @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+        Long id;
+        @CreditCardConstraint
+        String number;
+
+    }
+  learner_created: true
+- name: src/antifraud/repository/StolenCardRepository.java
+  visible: true
+  text: |
+    package antifraud.repository;
+
+    import antifraud.model.StolenCard;
+    import org.springframework.data.jpa.repository.JpaRepository;
+
+    public interface StolenCardRepository extends JpaRepository<StolenCard, Long> {
+        StolenCard findByNumber(String number);
+        boolean existsByNumber(String number);
+        StolenCard deleteStolenCardByNumber(String number);
+    }
+  learner_created: true
+- name: src/antifraud/model/validator/CreditCardValidator.java
+  visible: true
+  text: |
+    package antifraud.model.validator;
+
+    import org.springframework.http.HttpStatus;
+    import org.springframework.web.server.ResponseStatusException;
+
+    import javax.validation.ConstraintValidator;
+    import javax.validation.ConstraintValidatorContext;
+    import java.util.Objects;
+
+    public class CreditCardValidator implements
+            ConstraintValidator<CreditCardConstraint, String> {
+
+        @Override
+        public void initialize(CreditCardConstraint creditCard) {
+        }
+
+        @Override
+        public boolean isValid(String creditCard,
+                               ConstraintValidatorContext cxt) {
+            return checkLuhn(creditCard);
+        }
+
+        private static String calculateLuhnCheckDigit(String number) {
+            int sum = 0;
+            for (int i = 0; i < number.length(); i++) {
+                int digit = number.charAt(i) - '0';
+                if (i % 2 == 0) {
+                    digit *= 2;
+                    if (digit > 9) {
+                        digit -= 9;
+                    }
+                }
+                sum += digit;
+            }
+            int checkDigit = (1000 - sum) % 10;
+            return String.valueOf(checkDigit);
+        }
+        private static boolean checkLuhn(String number) {
+            if(number == null){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            } else {
+                return number.length() == 16 &&
+                        Objects.equals(
+                                calculateLuhnCheckDigit(number.substring(0, 15)),
+                                number.substring(15)
+                        );
+            }
+        }
+
+    }
+  learner_created: true
+- name: src/antifraud/repository/IpRepository.java
+  visible: true
+  text: |
+    package antifraud.repository;
+
+    import antifraud.model.Ip;
+    import org.springframework.data.jpa.repository.JpaRepository;
+
+    import java.util.Optional;
+
+    public interface IpRepository extends JpaRepository<Ip, Long> {
+        Optional<Ip> findByIp(String ip);
+        boolean existsByIp(String ip);
+        int deleteByIp(String ip);
+
+    }
+  learner_created: true
+- name: src/antifraud/model/Role.java
+  visible: true
+  text: |
+    package antifraud.model;
+
+    import org.springframework.security.core.GrantedAuthority;
+
+    public enum Role implements GrantedAuthority {
+        MERCHANT, ADMINISTRATOR, SUPPORT;
+
+        @Override
+        public String getAuthority() {
+            return "ROLE_" + name();
+        }
+    }
+  learner_created: true
+- name: src/antifraud/model/validator/CreditCardConstraint.java
+  visible: true
+  text: |
+    package antifraud.model.validator;
+
+    import javax.validation.Constraint;
+    import javax.validation.Payload;
+    import java.lang.annotation.*;
+
+    @Documented
+    @Constraint(validatedBy = CreditCardValidator.class)
+    @Target( { ElementType.METHOD, ElementType.FIELD })
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface CreditCardConstraint {
+        String message() default "Invalid card number";
+        Class<?>[] groups() default {};
+        Class<? extends Payload>[] payload() default {};
+    }
+  learner_created: true
+- name: src/antifraud/model/Ip.java
+  visible: true
+  text: |
+    package antifraud.model;
+
+    import com.fasterxml.jackson.annotation.JsonProperty;
+    import lombok.Getter;
+    import lombok.Setter;
+
+    import javax.persistence.*;
+    import javax.validation.constraints.NotEmpty;
+    import javax.validation.constraints.Pattern;
+
+    @Entity
+    @Getter
+    @Setter
+    @Table(name = "suspicious_ip")
+    public class Ip {
+        @Id
+        @GeneratedValue
+        @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+        Long id;
+
+        @NotEmpty
+        @Column(unique = true)
+        @Pattern(regexp = "^((\\d|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])\\.){3}(\\d|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])$")
+        String ip;
+    }
+  learner_created: true
+- name: src/antifraud/model/RegionCodes.java
+  visible: true
+  text: |
+    package antifraud.model;
+
+    public enum RegionCodes {
+        EAP, ECA, HIC, LAC, MENA, SA, SSA
+    }
+  learner_created: true
+- name: src/antifraud/model/response/TransactionResultResponse.java
+  visible: true
+  text: |
+    package antifraud.model.response;
+
+    import antifraud.model.Result;
+    import lombok.Getter;
+    import lombok.Setter;
+
+    @Getter
+    @Setter
+    public class TransactionResultResponse {
+        private Result result;
+    //    private String info = "";
+        public TransactionResultResponse() {
+
+        }
+    //    public void appendInfo(String str) {
+    //        info += str;
+    //    }
+    //    public String getInfo() {
+    //        return info.length() == 0 ? "none" : info.trim();
+    //    }
+
+    }
+  learner_created: false
+- name: src/antifraud/service/TransactionService.java
+  visible: true
+  text: |-
+    package antifraud.service;
+
+    import antifraud.model.Result;
+    import antifraud.model.request.TransactionRequest;
+    import antifraud.model.response.TransactionResultResponse;
+    import lombok.AllArgsConstructor;
+    import org.springframework.stereotype.Service;
+
+    import java.util.regex.Pattern;
+
+    @Service
+    @AllArgsConstructor
+    public class TransactionService {
+
+        private final String IPV4_REGEX = "(([0-1]?\\d{1,2}\\.)|(2[0-4]\\d\\.)|(25[0-5]\\.)){3}(([0-1]?\\d{1,2})|(2[0-4]\\d)|(25[0-5]))";
+        private final Pattern IPV4_PATTERN = Pattern.compile(IPV4_REGEX);
+
+    //    IpRepository ipRepository;
+    //    StolenCardRepository stolenCardRepository;
+
+        public TransactionResultResponse process(TransactionRequest request) {
+            TransactionResultResponse response = new TransactionResultResponse();
+            if (request.getAmount() <= 200) {
+                response.setResult(Result.ALLOWED);
+            } else if (request.getAmount() <= 1500) {
+                response.setResult(Result.MANUAL_PROCESSING);
+            } else {
+                response.setResult(Result.PROHIBITED);
+    //            response.appendInfo(" amount");
+            }
+    //        if (ipRepository.existsByIpAddressIgnoreCase(request.getIp())) {
+    //            response.setResult(Result.PROHIBITED);
+    //            response.appendInfo(" ip");
+    //        }
+    //        if (stolenCardRepository.existsByNumber(request.getNumber())) {
+    //            response.setResult(Result.PROHIBITED);
+    //            response.appendInfo(" number");
+    //        }
+            return response;
+        }
+
+
+    //    @Transactional
+    //    public StolenCard addStolenCard(StolenCard stolenCard) {
+    //        if (stolenCardRepository.existsByNumber(stolenCard.getNumber())) {
+    //            throw new ResponseStatusException(HttpStatus.CONFLICT);
+    //        } else {
+    //            stolenCardRepository.save(stolenCard);
+    //            return stolenCard;
+    //        }
+    //    }
+    //
+    //    @Transactional
+    //    public Map<String, String> deleteStolenCard(String number) {
+    //        if (number.length() != 16) {
+    //            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+    //        }
+    //        if (!stolenCardRepository.existsByNumber(number)) {
+    //            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+    //        } else {
+    //            StolenCard stolenCard = stolenCardRepository.findByNumber(number);
+    //            stolenCardRepository.delete(stolenCard);
+    //            return Map.of("status", "Card " + stolenCard.getNumber() + " successfully removed!");
+    //        }
+    //    }
+    //
+    //    @Transactional
+    //    public List<StolenCard> listStolenCards() {
+    //        return stolenCardRepository.findAll(
+    //                Sort.sort(StolenCard.class).by(StolenCard::getId).ascending()
+    //        );
+    //    }
+    //
+    //    public Optional<Ip> addSuspiciousIp(Ip ip) {
+    //        if (ipRepository.existsByIpAddressIgnoreCase(ip.getIpAddress())) {
+    //            return Optional.empty();
+    //        }
+    //        return Optional.of(ipRepository.save(ip));
+    //    }
+    //
+    //
+    //    @Transactional
+    //    public boolean deleteSuspiciousIp(String ip) {
+    //        if (!isValidIPV4(ip)) {
+    //            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+    //        }
+    //        return ipRepository.deleteByIpAddressIgnoreCase(ip) == 1;
+    //    }
+    //
+    //    private boolean isValidIPV4(final String s) {
+    //        return IPV4_PATTERN.matcher(s).matches();
+    //    }
+    //
+    //    public List<Ip> listSuspiciousAddresses() {
+    //        return ipRepository.findAll()
+    //                .stream()
+    //                .sorted(Comparator.comparing(Ip::getId))
+    //                .collect(Collectors.toList());
+    //    }
+    }
+  learner_created: false
+- name: src/antifraud/AntiFraudApplication.java
+  visible: true
+  text: |-
+    package antifraud;
+
+    import org.springframework.boot.SpringApplication;
+    import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+    @SpringBootApplication
+    public class AntiFraudApplication {
+        public static void main(String[] args) {
+            SpringApplication.run(AntiFraudApplication.class, args);
+        }
+    }
+  learner_created: false
+- name: src/antifraud/repository/TransactionRepository.java
+  visible: true
+  text: |+
+    package antifraud.repository;
+
+    import antifraud.model.request.TransactionRequest;
+    import org.springframework.data.jpa.repository.JpaRepository;
+    import org.springframework.data.jpa.repository.Query;
+    import org.springframework.data.repository.query.Param;
+
+    import javax.validation.constraints.NotEmpty;
+    import java.time.LocalDateTime;
+    import java.util.List;
+
+    public interface TransactionRepository extends JpaRepository<TransactionRequest, Long> {
+
+
+        List<TransactionRequest> findAllByNumberAndDateBetween(@NotEmpty String number, LocalDateTime start, LocalDateTime end);
+    //    List<TransactionRequest> findAllByDateAfter(LocalDateTime hourMinusOne);
+    //
+    //    @Query(nativeQuery = true, value="select * from transactions c where c.date between :start and :end")
+    //    List<TransactionRequest> getAllByTimeBetween(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    //    List<TransactionRequest> findAllByNumberAndDateAfter(String number, LocalDateTime afterTime);
+    //    @Query("select m from TransactionRequest m where m.date >= :oneHourBefore")
+    //    List<TransactionRequest> findAllWithDateAfter(@Param("oneHourBefore") LocalDateTime oneHourBefore);
+    //
+    //    default List<TransactionRequest> getOneHourBefore() {
+    //        LocalDateTime oneHourBefore = LocalDateTime.now().minus(1, ChronoUnit.HOURS);
+    //        return findAllWithDateAfter(oneHourBefore);
+    //    }
+    }
+
+  learner_created: true
+- name: src/antifraud/service/TransactionAmountChanger.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/mo/TransactionFeedback.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/model/request/TransactionFeedback.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/model/validator/ValueOfEnum.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/model/validator/ValueOfEnumValidator.java
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/learn/step/18072#comment
-status: Unchecked
+status: Solved
+feedback:
+  message: Well done! You've finished the project. Select a new project on <a href="https://hyperskill.org/projects">JetBrains
+    Academy</a> to continue learning.
+  time: Mon, 13 Jun 2022 16:33:48 UTC
 record: -1

@@ -11,10 +11,6 @@ public class CreditCardValidator implements
         ConstraintValidator<CreditCardConstraint, String> {
 
     @Override
-    public void initialize(CreditCardConstraint creditCard) {
-    }
-
-    @Override
     public boolean isValid(String creditCard,
                            ConstraintValidatorContext cxt) {
         return checkLuhn(creditCard);

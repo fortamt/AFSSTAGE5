@@ -3,6 +3,8 @@ package antifraud.service;
 import antifraud.model.Ip;
 import antifraud.model.Result;
 import antifraud.model.StolenCard;
+import antifraud.model.User;
+import antifraud.model.request.TransactionFeedback;
 import antifraud.model.request.TransactionRequest;
 import antifraud.model.response.TransactionResultResponse;
 import antifraud.repository.IpRepository;
@@ -16,8 +18,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -35,8 +35,9 @@ public class TransactionService {
 
     public TransactionResultResponse process(TransactionRequest request) {
         LocalDateTime localDateTime = request.getDate();
-        transactionRepository.save(request);
         TransactionResultResponse response = new TransactionResultResponse();
+        transactionRepository.save(request);
+
         long regions = transactionRepository.findAllByNumberAndDateBetween(request.getNumber(), localDateTime.minusHours(1), localDateTime)
                 .stream().map(TransactionRequest::getRegion).distinct().count();
         long ips = transactionRepository.findAllByNumberAndDateBetween(request.getNumber(), localDateTime.minusHours(1), localDateTime)
@@ -70,17 +71,19 @@ public class TransactionService {
         }
 
         if(response.getInfo().isEmpty()){
-            if(request.getAmount() <= 200){
+            if(request.getAmount() <= TransactionAmountChanger.ALLOWED){
                 response.setResult(Result.ALLOWED);
                 response.addInfo("none");
-            } else if (request.getAmount() <= 1500) {
+            } else if (request.getAmount() <= TransactionAmountChanger.MANUAL_PROCESSING) {
                 response.setResult(Result.MANUAL_PROCESSING);
                 response.addInfo("amount");
-            } else if (request.getAmount() > 1500) {
+            } else if (request.getAmount() > TransactionAmountChanger.MANUAL_PROCESSING) {
                 response.setResult(Result.PROHIBITED);
                 response.addInfo("amount");
             }
         }
+        request.setResult(response.getResult().name());
+        transactionRepository.save(request);
         return response;
     }
 
@@ -140,5 +143,34 @@ public class TransactionService {
                 .stream()
                 .sorted(Comparator.comparing(Ip::getId))
                 .collect(Collectors.toList());
+    }
+
+    public TransactionRequest feedbackProcess(TransactionFeedback feedback) {
+        TransactionRequest transactionRequest;
+        if(transactionRepository.existsByTransactionId(feedback.getTransactionId())){
+            transactionRequest = transactionRepository.findByTransactionId(feedback.getTransactionId());
+            if(!transactionRequest.getFeedback().isEmpty()){
+                throw new ResponseStatusException(HttpStatus.CONFLICT);
+            }
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        transactionRequest.setFeedback(feedback.getFeedback());
+        TransactionAmountChanger.changeLimit(transactionRequest);
+        transactionRepository.save(transactionRequest);
+        return transactionRequest;
+    }
+
+    public List<TransactionRequest> history() {
+        return transactionRepository.findAll(Sort.sort(TransactionRequest.class)
+                        .by(TransactionRequest::getTransactionId)
+                        .ascending());
+    }
+
+    public List<TransactionRequest> historyByCardNumber(String number) {
+        if(!transactionRepository.existsByNumber(number)){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        return transactionRepository.findAllByNumber(number);
     }
 }
